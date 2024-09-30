@@ -11,8 +11,6 @@ void dfs(int row, int col, int golemIdx,
 	vector<vector<int>>& forest, vector<vector<int>>& ch)
 {
 	ch[row][col] = 1;
-	//cout << row << ' ' << col << '\n';
-	//cout << forest[row][col] << '\n';
 	if (tempRes < row) tempRes = row;
 	for (int i = 0; i < 4; i++)
 	{
@@ -30,7 +28,10 @@ void dfs(int row, int col, int golemIdx,
 					dfs(nRow, nCol, golemIdx, forest, ch);
 			}
 			else if (forest[row][col] < 0)
-				dfs(nRow, nCol, forest[nRow][nCol], forest, ch);
+			{
+				if (forest[nRow][nCol] != 0)
+					dfs(nRow, nCol, forest[nRow][nCol], forest, ch);
+			}
 		}
 	}
 }
@@ -127,8 +128,7 @@ int main()
 			vector<vector<int>> ch(r + 1 + OFFSET, vector<int>(c + 1));
 			dfs(centerRow, centerCol, golemIdx, forest, ch);
 			res += tempRes - OFFSET;
-			//cout << "res: " << res << '\n';
 		}
 	}
-    cout << res;
+	cout << res;
 }
