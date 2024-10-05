@@ -8,6 +8,7 @@ struct Knight {
 	pair<int, int> shield;
 	int h = 0;
 	int w = 0;
+	bool moved = false;
 };
 int l, n, q;
 int r, c, h, w, k;
@@ -50,10 +51,25 @@ int main()
 	{
 		int target, dir;
 		cin >> target >> dir;
+		for (int j = 1; j <= n; j++) knight[j].moved = false;
+		//cout << '\n';
+		//for (int a = 1; a <= l; a++)
+		//{
+		//	for (int b = 1; b <= l; b++)
+		//		cout << knightMap[a][b] << ' ';
+		//	cout << '\n';
+		//}
 		if (knight[target].hp > 0)
 		{
 			flag = true;
 			recur(target, target, dir);
+			//cout << '\n';
+			//for (int a = 1; a <= l; a++)
+			//{
+			//	for (int b = 1; b <= l; b++)
+			//		cout << knightMap[a][b] << ' ';
+			//	cout << '\n';
+			//}
 		}
 	}
 	int damageSum = 0;
@@ -96,8 +112,9 @@ void recur(int orderTarget, int kIdx, int dir)
 		recur(orderTarget, nextIdx[i], dir);
 	// 확인이 끝남
 	// 그동안 벽을 안만났으면 내가 이동
-	if (flag)
+	if (flag && !cur.moved)
 	{
+		cur.moved = true;
 		int damageCnt = 0;
 		// 이전자리 비우기
 		for (int i = cur.shield.first; i < cur.shield.first + cur.h; i++)
@@ -113,7 +130,7 @@ void recur(int orderTarget, int kIdx, int dir)
 				knightMap[i + drow[dir]][j + dcol[dir]] = kIdx;
 				if (board[i + drow[dir]][j + dcol[dir]] == 1)
 					damageCnt++;
-			}
+			}	
 		}
 		cur.shield = { cur.shield.first + drow[dir], cur.shield.second + dcol[dir] };
 		if (kIdx != orderTarget)
@@ -123,7 +140,7 @@ void recur(int orderTarget, int kIdx, int dir)
 		}
 		if (cur.hp <= 0)
 		{
-			for (int i = cur.shield.first; i < cur.shield.first + cur.h; i++)
+			for (int i = cur.shield.first; i < cur.	shield.first + cur.h; i++)
 			{
 				for (int j = cur.shield.second; j < cur.shield.second + cur.w; j++)
 				{
