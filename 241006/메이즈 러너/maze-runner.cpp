@@ -81,20 +81,8 @@ int main()
 	getInput();
 	for (int i = 1; i <= k; i++)
 	{
-		//cout << "게임순서"<<i << '\n';
 		if (!isEnd())
 			playGame();
-		//cout << '\n';
-		//for (int a = 1; a <= n; a++)
-		//{
-		//	for (int b = 1; b <= n; b++)
-		//	{
-		//		cout << board[a][b] << '\t';
-		//	}
-		//	cout << '\n';
-		//}
-		//for (int a = 1; a <= m; a++)
-		//	cout << "player" << a << " " << players[a].r << " " << players[a].c << '\n';
 	}
 	printRes();
 }
@@ -141,7 +129,6 @@ void movePlayer()
 				players[idx].c == goal.c)
 			{
 				players[idx].isDone = true;
-				//cout << idx << "haha out !!\n";
 			}
 		}
 	}
@@ -152,9 +139,7 @@ int calDist(pair<int, int> pos1, pair<int, int> pos2)
 }
 void rotateBoard()
 {
-	// 사각형 찾기
 	Rect rect = getRect();
-	// 회전
 	rotate(rect.r, rect.c, rect.lineLength);
 }
 Rect getRect()
@@ -163,10 +148,8 @@ Rect getRect()
 	{
 		for (int a = goal.r - i + 1; a <= goal.r; a++)
 		{
-			//cout << a <<' ';
 			for (int b = goal.c - i + 1; b <= goal.c; b++)
 			{
-				//cout << b <<'\n';
 				if (a < 1 || b < 1 || b > n) continue;
 				for (int idx = 1; idx <= m; idx++)
 				{
@@ -174,7 +157,6 @@ Rect getRect()
 						players[idx].c >= b && players[idx].c <= b + i - 1 &&
 						!players[idx].isDone)
 					{
-						//cout << "found rect: " << a << " " << b << " " << i << '\n';
 						return Rect(a, b, i);
 					}
 				}
@@ -186,7 +168,6 @@ Rect getRect()
 void rotate(int rr, int cc, int len)
 {
 	int t[11][11] = { 0 };
-	// Decrease values in the specified subarray
 	for (int i = rr; i < rr + len; i++)
 	{
 		for (int j = cc; j < cc + len; j++)
@@ -214,7 +195,6 @@ void rotate(int rr, int cc, int len)
 			players[i].c >= cc && players[i].c <= cc + len - 1 &&
 			!players[i].isDone)
 		{
-			//cout << i << " is in!!\n";
 			int new_r = rr + (players[i].c - cc);
 			int new_c = cc + len - 1 - (players[i].r - rr);
 			players[i].r = new_r;
