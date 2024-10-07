@@ -7,7 +7,6 @@ int n, m, k;
 int atk[11][11];
 int lastAtk[11][11];
 bool isPlayed[11][11];
-//bool strongExist;
 bool weakExist;
 int turn;
 int wr, wc, sr, sc;
@@ -17,27 +16,10 @@ int drow8[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 int dcol8[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 int backRow[] = { 1, 0, -1, 0 };
 int backCol[] = { 0, 1, 0, -1 };
-//struct CheckItem {
-	//pair <int, int> pos = { 0,0 };
-	//pair <int, int> prevPos = { 0, 0 };
-	//CheckItem(pair<int, int> _pos, pair<int, int> _prevPos)
-	//{
-	//	pair <int, int> pos = _pos;
-	//	pair <int, int> prevPos = _prevPos;
-	//}
-//};
-//int ch[11][11];
 bool isAttacked = false;
 pair<int, int> selectWeak()
 {
 	int weakAtk = 6000;
-	//cout << "지난공격\n";
-	//for (int i = 1; i <= n; i++)
-	//{
-	//	for (int j = 1; j <= m; j++)
-	//		cout << lastAtk[i][j] << '\t';
-	//	cout << '\n';
-	//}
 	for (int i = 1; i <= n; i++)
 	{
 		for (int j = 1; j <= m; j++)
@@ -47,7 +29,6 @@ pair<int, int> selectWeak()
 				if (atk[i][j] < weakAtk)
 				{
 					weakAtk = atk[i][j];
-					//cout << "weak보다 작은 크기" << i << j << '\n';
 					wr = i;
 					wc = j;
 				}
@@ -81,15 +62,11 @@ pair<int, int> selectWeak()
 	atk[wr][wc] += (n + m);
 	lastAtk[wr][wc] = turn;
 	isPlayed[wr][wc] = true;
-
-	//cout << "weak 결과: " << wr << wc << '\n';
-
 	return { wr, wc };
 }
 pair<int, int> selectStrong()
 {
 	int sAtk = -100;
-	//strongExist = false;
 	for (int i = 1; i <= n; i++)
 	{
 		for (int j = 1; j <= m; j++)
@@ -105,7 +82,6 @@ pair<int, int> selectStrong()
 					sAtk = atk[i][j];
 					sr = i;
 					sc = j;
-					//strongExist = true;
 				}
 				else if (atk[i][j] == sAtk)
 				{
@@ -113,8 +89,6 @@ pair<int, int> selectStrong()
 					{
 						sr = i;
 						sc = j;
-						//strongExist = true;
-
 					}
 					else if (lastAtk[sr][sc] == lastAtk[i][j])
 					{
@@ -122,8 +96,6 @@ pair<int, int> selectStrong()
 						{
 							sr = i;
 							sc = j;
-							//strongExist = true;
-
 						}
 						else if (sr + sc == i + j)
 						{
@@ -131,7 +103,6 @@ pair<int, int> selectStrong()
 							{
 								sr = i;
 								sc = j;
-								//strongExist = true;
 							}
 						}
 					}
@@ -139,7 +110,6 @@ pair<int, int> selectStrong()
 			}
 		}
 	}
-	//cout << "strong 결과: " << sr << sc << '\n';
 	return { sr, sc };
 }
 void tryLaser()
@@ -232,92 +202,13 @@ void tryLaser()
 		}
 		atk[sr][sc] -= atk[wr][wc];
 		isPlayed[sr][sc] = true;
-		//cout << "isPlayed\n";
-		//for (int i = 1; i <= n; i++)
-		//{
-		//	for (int j = 1; j <= m; j++)
-		//		cout << isPlayed[i][j] << '\t';
-		//	cout << '\n';
-		//}
 		isAttacked = true;
-		//int dist = ch[sr][sc];
-		////cout << "거리: " << dist << '\n';
-		//int r = sr;
-		//int c = sc;
-		//isAttacked = true;
-		//// 역추적
-		//queue<pair<int, int> > target;
-		//for (int i = dist; i > 1; i--)
-		//{
-		//	for (int j = 0; j < 4; j++)
-		//	{
-		//		int nRow = r + backRow[j];
-		//		int nCol = c + backCol[j];
-		//		if (nRow < 1) nRow = n;
-		//		if (nRow > n) nRow = 1;
-		//		if (nCol < 1) nCol = m;
-		//		if (nCol > m) nCol = 1;
-		//		if (ch[nRow][nCol] == ch[r][c] - 1)
-		//		{
-		//			r = nRow;
-		//			c = nCol;
-		//			//cout << "여기로 가능중: " << r << " " << c << '\n';
-		//			target.push({ r, c });
-		//			break;
-		//		}
-		//	}
-		//}
-		//// 공격!
-		//while (!target.empty())
-		//{
-		//	pair<int, int> pos = target.front();
-		//	target.pop();			
-		//	if (pos.first == wr && pos.second == wc)
-		//	{
-		//		continue;
-		//	}
-		//	atk[pos.first][pos.second] -= (atk[wr][wc] / 2);
-		//	isPlayed[pos.first][pos.second] = true;
-		//}
-		//atk[sr][sc] -= atk[wr][wc];
-		//isPlayed[sr][sc] = true;
-		//cout << '\n';
-		//for (int i = 1; i <= n; i++)
-		//{
-		//	for (int j = 1; j <= m; j++)
-		//		cout << atk[i][j] << '\t';
-		//	cout << '\n';
-		//}
 	}
 }
-//void tryLaserDfs(int gor, int goc)
-//{
-//	if (gor == sr && goc == sc)
-//	{
-//		for (int i = 1; i <= n; i++)
-//		{
-//			for (int j = 1; j <= m; j++)
-//			{
-//				if (ch[i][j] == 1)
-//				{
-//					if (i == wr && j == wc) continue;
-//					if (i == sr && j == sc) continue;
-//					atk[i][j] -= (atk[wr][wc] / 2);
-//				}
-//			}
-//		}
-//		atk[sr][sc] -= atk[wr][wc];
-//	}
-//	else
-//	{
-//
-//	}
-//}
 void tryBomb()
 {
 	if (!isAttacked)
 	{
-		//cout << "레이저 실패" << '\n';
 		// 8방위 공격!
 		for (int i = 0; i < 8; i++)
 		{
@@ -371,13 +262,6 @@ void playTurn()
 	}
 	selectWeak();
 	selectStrong();
-	//cout << "atk 보드 상황\n";
-	//for (int i = 1; i <= n; i++)
-	//{
-	//	for (int j = 1; j <= m; j++)
-	//		cout << atk[i][j] << "\t\t";
-	//	cout << '\n';
-	//}
 	tryLaser();
 	tryBomb();
 	repair();
@@ -405,13 +289,6 @@ int main()
 		}
 		if (cnt == 1) break;
 		playTurn();
-		//cout << "결과\n";
-		//for (int i = 1; i <= n; i++)
-		//{
-		//	for (int j = 1; j <= m; j++)
-		//		cout << atk[i][j] << "\t\t";
-		//	cout << '\n';
-		//}
 	}
 	wr = wc = -1;
 	pair<int, int> s = selectStrong();
