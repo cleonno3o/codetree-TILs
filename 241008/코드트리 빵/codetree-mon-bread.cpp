@@ -36,12 +36,10 @@ void moveToConv()
 	{
 		if (!isArrive[i])
 		{
-			//cout << "플레이어 " << i << "이동중" << "\n";
 			pair<int, int> convPos = conv[i];
-			//cout << "player" << i <<"의 편의점: " << convPos.first << " " << convPos.second << "\n";
 			queue<pair<int, int> > q;
 			pair<int, int> ch[16][16];
-			int firstMove[16][16] = { -1 };
+			int firstMove[16][16];
 			for (int a = 1; a <= n; a++)
 			{
 				for (int b = 1; b <= n; b++)
@@ -58,8 +56,6 @@ void moveToConv()
 				q.pop();
 				if (curPos == convPos)
 				{
-					//cout << "on conv" << "\n";
-					//cout << firstMove[curPos.first][curPos.second] << '\n';
 					break;
 				}
 				for (int j = 0; j < 4; j++)
@@ -78,50 +74,8 @@ void moveToConv()
 					}
 				}
 			}
-			// debug
-			if (playTime > 60)
-			{
-				//for (int a = 1; a <= n; a++)
-				//{
-				//	for (int b = 1; b <= n; b++)
-				//		cout << firstMove[a][b] << " ";
-				//	cout << "\n";
-				//}
-				//cout << "\n";
-				//for (int a = 1; a <= n; a++)
-				//{
-				//	for (int b = 1; b <= n; b++)
-				//		cout << ch[a][b].first << " " << ch[a][b].second << "||\t";
-				//	cout << "\n";
-				//}
-			}
-
-			//cout << "breakd!\n";
-			//for (int a = 1; a <= n; a++)
-			//{
-			//	for (int b = 1; b <= n; b++)
-			//		cout << ch[a][b].first << " " << ch[a][b].second << "\t||";
-			//	cout << "\n";
-			//}
-			//int r = convPos.first;
-			//int c = convPos.second;
-			//while (1)
-			//{
-			//	pair<int, int> prev = ch[r][c];
-			//	//cout << "이전: " << prev.first << " " << prev.second << "\n";
-			//	if (prev == player[i]) break;
-			//	else
-			//	{
-			//		r = prev.first;
-			//		c = prev.second;
-			//	}
-			//}
-			//player[i] = make_pair(r, c);
-			//cout << "여기서 " << player[i].first << " " << player[i].second << "\n";
 			player[i].first += drow[firstMove[convPos.first][convPos.second]];
 			player[i].second += dcol[firstMove[convPos.first][convPos.second]];
-			//cout << "여기로 " << player[i].first << " " << player[i].second << "\n";
-
 			if (player[i] == conv[i]) isArrive[i] = true;
 		}
 	}
@@ -141,7 +95,6 @@ void newPlayerIn()
 	// bfs를 통해 baseCamp탐색
 	if (playTime <= m)
 	{
-		//cout << "in " << playTime << " \n";
 		int r, c;
 		r = c = 0;
 		pair<int, int> convPos = conv[playTime];
@@ -150,12 +103,11 @@ void newPlayerIn()
 		q.push(convPos);
 		ch[convPos.first][convPos.second] = 1;
 		bool isFound = false;
+		int minDist = -1;
 		while (!q.empty())
 		{
-			
 			pair<int, int> pos = q.front();
 			q.pop();
-			if (isFound) break;
 			for (int i = 0; i < 4; i++)
 			{
 				int nRow = pos.first + drow[i];
@@ -163,26 +115,23 @@ void newPlayerIn()
 				if (nRow > n || nRow < 1 || nCol >n || nCol < 1) continue;
 				if (ch[nRow][nCol] == 0 && board[nRow][nCol] != BLOCKED)
 				{
-					//cout << "push " << nRow << " " << nCol << "\n";
-					if (board[nRow][nCol] == 1) isFound = true;
+					ch[nRow][nCol] = ch[pos.first][pos.second] + 1;
 					q.push({ nRow, nCol });
-					ch[nRow][nCol] =  1;
+					if (board[nRow][nCol] == 1 && !isFound)
+					{
+						minDist = ch[nRow][nCol];
+						isFound = true;
+					}
 				}
 			}
 		}
 
-		//for (int i = 1; i <= n; i++)
-		//{
-		//	for (int j = 1; j <= n; j++)
-		//		cout << ch[i][j] << " ";
-		//	cout << "\n";
-		//}
 		bool isSelected = false;
 		for (int i = 1; i <= n; i++)
 		{
 			for (int j = 1; j <= n; j++)
 			{
-				if (board[i][j] == 1 && ch[i][j] == 1 && !isSelected)
+				if (board[i][j] == 1 && ch[i][j] == minDist && !isSelected)
 				{
 					r = i;
 					c = j;
@@ -193,7 +142,6 @@ void newPlayerIn()
 		// 선택 완료!
 		board[r][c] = BLOCKED;
 		player[playTime] = make_pair(r, c);
-		//cout << "플레이어 " << playTime  << "여기로드옴 " << r << " " << c << '\n';
 	}
 }
 bool isEndGame()
@@ -204,7 +152,6 @@ bool isEndGame()
 		if (!isArrive[i])
 		{
 			isEnd = false;
-			//cout << i << "가 도착하지 않음\n";
 			break;
 		}
 	}
@@ -216,19 +163,9 @@ int main()
 	playTime = 1;
 	while (1)
 	{
-		//cout << "시간 " << playTime << '\n';
 		moveToConv();
 		blockBoard();
 		newPlayerIn();
-		//for (int i = 1; i <= n; i++)
-		//{
-		//	for (int j = 1; j <= n; j++)
-		//		cout << board[i][j] << '\t';
-		//	cout << '\n';
-		//}
-		//for (int i = 1; i <= m; i++)
-		//	if (!isArrive[i])
-		//		cout << i  <<"is" << player[i].first << ' ' << player[i].second << "\n";
 		// 모든 액션완료
 		// 종료되지 않았으면 시간증가
 		if (!isEndGame())
