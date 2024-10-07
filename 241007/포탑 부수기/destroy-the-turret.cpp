@@ -115,32 +115,6 @@ pair<int, int> selectStrong()
 void tryLaser()
 {
 	isAttacked = false;
-	// 최단 거리 체크
-	int chMin[11][11] = { 0 };
-	queue<pair<int, int> > qMin;
-	qMin.push({ wr, wc });
-	chMin[wr][wc] = 1;
-	while (!qMin.empty())
-	{
-		pair<int, int> pos = qMin.front();
-		qMin.pop();
-		if (pos.first == sr && pos.second == sc) break;
-		for (int i = 0; i < 4; i++)
-		{
-			int nRow = pos.first + drow[i];
-			int nCol = pos.second + dcol[i];
-			if (nRow < 1) nRow = n;
-			if (nRow > n) nRow = 1;
-			if (nCol < 1) nCol = m;
-			if (nCol > m) nCol = 1;
-			if (chMin[nRow][nCol] == 0)
-			{
-				qMin.push({ nRow, nCol });
-				chMin[nRow][nCol] = chMin[pos.first][pos.second];
-			}
-		}
-	}
-	int minDist = chMin[sr][sc];
 	// 도착지점까지 경로 구하기
 	pair<int, int> ch[11][11];
 	for (int i = 1; i <= n; i++)
@@ -179,7 +153,7 @@ void tryLaser()
 		}
 	}
 	// 경로가 없으면 공격하지 않음
-	if (ch[sr][sc] == make_pair(-1, -1) || cdist > minDist) isAttacked = false;
+	if (ch[sr][sc] == make_pair(-1, -1)) isAttacked = false;
 	// 경로가 존재하면
 	else
 	{
@@ -192,8 +166,6 @@ void tryLaser()
 				break;
 			else
 			{
-				//cout << "현재 여기가 데미지 입습니다 " << prevPos.first << " " << prevPos.second << " ";
-				//cout << atk[prevPos.first][prevPos.second] << "이 체력에서" << atk[wr][wc] / 2 << '\n';
 				atk[prevPos.first][prevPos.second] -= (atk[wr][wc] / 2);
 				isPlayed[prevPos.first][prevPos.second] = true;
 				gor = prevPos.first;
