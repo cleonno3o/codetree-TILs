@@ -1,12 +1,13 @@
 #include <iostream>
 #include <queue>
+#include <algorithm>
 using namespace std;
 int n, m, k;
 
 int atk[11][11];
 int lastAtk[11][11];
 bool isPlayed[11][11];
-bool strongExist;
+//bool strongExist;
 bool weakExist;
 int turn;
 int wr, wc, sr, sc;
@@ -16,6 +17,16 @@ int drow8[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 int dcol8[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 int backRow[] = { 1, 0, -1, 0 };
 int backCol[] = { 0, 1, 0, -1 };
+struct CheckItem {
+	pair <int, int> pos = { 0,0 };
+	pair <int, int> prevPos = { 0, 0 };
+	//CheckItem(pair<int, int> _pos, pair<int, int> _prevPos)
+	//{
+	//	pair <int, int> pos = _pos;
+	//	pair <int, int> prevPos = _prevPos;
+	//}
+};
+//int ch[11][11];
 bool isAttacked = false;
 pair<int, int> selectWeak()
 {
@@ -67,7 +78,7 @@ pair<int, int> selectWeak()
 			}
 		}
 	}
-	atk[wr][wc] += n + m;
+	atk[wr][wc] += (n + m);
 	lastAtk[wr][wc] = turn;
 	//isPlayed[wr][wc] = true;
 	//cout << "weak 결과: " << wr << wc << '\n';
@@ -77,7 +88,7 @@ pair<int, int> selectWeak()
 pair<int, int> selectStrong()
 {
 	int sAtk = -100;
-	strongExist = false;
+	//strongExist = false;
 	for (int i = 1; i <= n; i++)
 	{
 		for (int j = 1; j <= m; j++)
@@ -93,7 +104,7 @@ pair<int, int> selectStrong()
 					sAtk = atk[i][j];
 					sr = i;
 					sc = j;
-					strongExist = true;
+					//strongExist = true;
 				}
 				else if (atk[i][j] == sAtk)
 				{
@@ -101,7 +112,7 @@ pair<int, int> selectStrong()
 					{
 						sr = i;
 						sc = j;
-						strongExist = true;
+						//strongExist = true;
 
 					}
 					else if (lastAtk[sr][sc] == lastAtk[i][j])
@@ -110,7 +121,7 @@ pair<int, int> selectStrong()
 						{
 							sr = i;
 							sc = j;
-							strongExist = true;
+							//strongExist = true;
 
 						}
 						else if (sr + sc == i + j)
@@ -119,8 +130,7 @@ pair<int, int> selectStrong()
 							{
 								sr = i;
 								sc = j;
-								strongExist = true;
-
+								//strongExist = true;
 							}
 						}
 					}
@@ -133,16 +143,26 @@ pair<int, int> selectStrong()
 }
 void tryLaser()
 {
-	isAttacked = true;
+	isAttacked = false;
 	// 도착지점까지 경로 구하기
-	int ch[11][11] = { 0 };
+	pair<int, int> ch[11][11];
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= m; j++)
+		{
+			ch[i][j] = { -1, -1 };
+		}
+	}
 	queue<pair<int, int> > q;
 	q.push({ wr, wc });
-	ch[wr][wc] = 1;
+	ch[wr][wc] = { wr, wc };
+	//ch[wr][wc].pos = { wr, wc };
+	//ch[wr][wc].prevPos = { wr, wc };
 	while (!q.empty())
 	{
 		pair<int, int> pos = q.front();
 		q.pop();
+		if (pos.first == sr && pos.second == sc) break;
 		for (int i = 0; i < 4; i++)
 		{
 			int nRow = pos.first + drow[i];
@@ -151,62 +171,86 @@ void tryLaser()
 			if (nRow > n) nRow = 1;
 			if (nCol < 1) nCol = m;
 			if (nCol > m) nCol = 1;
-			if (ch[nRow][nCol] == 0 && atk[nRow][nCol] > 0)
+			if (ch[nRow][nCol] == make_pair(-1,-1) && atk[nRow][nCol] > 0)
 			{
 				q.push({ nRow, nCol });
-				ch[nRow][nCol] = ch[pos.first][pos.second] + 1;
+				ch[nRow][nCol] = { pos.first, pos.second };
 			}
 		}
 	}
-	//cout << "ch배열\n";
-	//for (int i = 1; i <= n; i++)
-	//{
-	//	for (int j = 1; j <= m; j++)
-	//		cout << ch[i][j] << '\t';
-	//	cout << '\n';
-	//}
 	// 경로가 없으면 공격하지 않음
-	if (ch[sr][sc] == 0) isAttacked = false;
+	if (ch[sr][sc] == make_pair(-1, -1)) isAttacked = false;
 	// 경로가 존재하면
 	else
 	{
-		int dist = ch[sr][sc];
-		//cout << "거리: " << dist << '\n';
-		int r = sr;
-		int c = sc;
-		isAttacked = true;
-		// 역추적
-		queue<pair<int, int> > target;
-		for (int i = dist; i > 2; i--)
+		int gor = sr;
+		int goc = sc;
+		while (1)
 		{
-			for (int j = 0; j < 4; j++)
+			pair<int, int> prevPos = ch[gor][goc];
+			if (prevPos == make_pair(wr, wc))
+				break;
+			else
 			{
-				int nRow = r + backRow[j];
-				int nCol = c + backCol[j];
-				if (nRow < 1) nRow = n;
-				if (nRow > n) nRow = 1;
-				if (nCol < 1) nCol = m;
-				if (nCol > m) nCol = 1;
-				if (ch[nRow][nCol] == ch[r][c] - 1)
-				{
-					r = nRow;
-					c = nCol;
-					//cout << "여기로 가능중: " << r << " " << c << '\n';
-					target.push({ r, c });
-					break;
-				}
+				//cout << "현재 여기가 데미지 입습니다 " << prevPos.first << " " << prevPos.second << " ";
+				//cout << atk[prevPos.first][prevPos.second] << "이 체력에서" << atk[wr][wc] / 2 << '\n';
+				atk[prevPos.first][prevPos.second] -= (atk[wr][wc] / 2);
+				isPlayed[prevPos.first][prevPos.second] = true;
+				gor = prevPos.first;
+				goc = prevPos.second;
 			}
-		}
-		// 공격!
-		while (!target.empty())
-		{
-			pair<int, int> pos = target.front();
-			target.pop();			
-			atk[pos.first][pos.second] -= (atk[wr][wc] / 2);
-			isPlayed[pos.first][pos.second] = true;
 		}
 		atk[sr][sc] -= atk[wr][wc];
 		isPlayed[sr][sc] = true;
+		//cout << "isPlayed\n";
+		//for (int i = 1; i <= n; i++)
+		//{
+		//	for (int j = 1; j <= m; j++)
+		//		cout << isPlayed[i][j] << '\t';
+		//	cout << '\n';
+		//}
+		isAttacked = true;
+		//int dist = ch[sr][sc];
+		////cout << "거리: " << dist << '\n';
+		//int r = sr;
+		//int c = sc;
+		//isAttacked = true;
+		//// 역추적
+		//queue<pair<int, int> > target;
+		//for (int i = dist; i > 1; i--)
+		//{
+		//	for (int j = 0; j < 4; j++)
+		//	{
+		//		int nRow = r + backRow[j];
+		//		int nCol = c + backCol[j];
+		//		if (nRow < 1) nRow = n;
+		//		if (nRow > n) nRow = 1;
+		//		if (nCol < 1) nCol = m;
+		//		if (nCol > m) nCol = 1;
+		//		if (ch[nRow][nCol] == ch[r][c] - 1)
+		//		{
+		//			r = nRow;
+		//			c = nCol;
+		//			//cout << "여기로 가능중: " << r << " " << c << '\n';
+		//			target.push({ r, c });
+		//			break;
+		//		}
+		//	}
+		//}
+		//// 공격!
+		//while (!target.empty())
+		//{
+		//	pair<int, int> pos = target.front();
+		//	target.pop();			
+		//	if (pos.first == wr && pos.second == wc)
+		//	{
+		//		continue;
+		//	}
+		//	atk[pos.first][pos.second] -= (atk[wr][wc] / 2);
+		//	isPlayed[pos.first][pos.second] = true;
+		//}
+		//atk[sr][sc] -= atk[wr][wc];
+		//isPlayed[sr][sc] = true;
 		//cout << '\n';
 		//for (int i = 1; i <= n; i++)
 		//{
@@ -216,6 +260,29 @@ void tryLaser()
 		//}
 	}
 }
+//void tryLaserDfs(int gor, int goc)
+//{
+//	if (gor == sr && goc == sc)
+//	{
+//		for (int i = 1; i <= n; i++)
+//		{
+//			for (int j = 1; j <= m; j++)
+//			{
+//				if (ch[i][j] == 1)
+//				{
+//					if (i == wr && j == wc) continue;
+//					if (i == sr && j == sc) continue;
+//					atk[i][j] -= (atk[wr][wc] / 2);
+//				}
+//			}
+//		}
+//		atk[sr][sc] -= atk[wr][wc];
+//	}
+//	else
+//	{
+//
+//	}
+//}
 void tryBomb()
 {
 	if (!isAttacked)
@@ -252,7 +319,11 @@ void repair()
 				//cout <<"똑같노 " << i << j << '\n';
 				continue;
 			}
-
+			if (atk[i][j] < 0)
+			{
+				atk[i][j] = 0;
+				continue;
+			}
 			if (!isPlayed[i][j] && atk[i][j] > 0)
 			{
 				//cout << "더하기" << i << j<< '\n';
@@ -278,12 +349,9 @@ void playTurn()
 	//		cout << atk[i][j] << "\t\t";
 	//	cout << '\n';
 	//}
-	if (strongExist)
-	{
-		isPlayed[wr][wc] = true;
-		tryLaser();
-		tryBomb();
-	}
+	isPlayed[wr][wc] = true;
+	tryLaser();
+	tryBomb();
 	repair();
 }
 int main()
@@ -299,16 +367,16 @@ int main()
 	for (turn = 1; turn <= k; turn++)
 	{
 		//cout << "turn: " << turn << "\n";
-		playTurn();
 		int cnt = 0;
 		for (int i = 1; i <= n; i++)
 		{
-			for (int j = 1; j <= n; j++)
+			for (int j = 1; j <= m;j++)
 			{
 				if (atk[i][j] > 0) cnt++;
 			}
 		}
 		if (cnt == 1) break;
+		playTurn();
 		//cout << "결과\n";
 		//for (int i = 1; i <= n; i++)
 		//{
