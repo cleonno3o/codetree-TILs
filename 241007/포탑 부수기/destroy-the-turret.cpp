@@ -29,7 +29,7 @@ pair<int, int> selectWeak()
 	{
 		for (int j = 1; j <= m; j++)
 		{
-			if (atk[i][j] != 0)
+			if (atk[i][j] > 0)
 			{
 				if (atk[i][j] < weakAtk)
 				{
@@ -65,9 +65,17 @@ pair<int, int> selectWeak()
 			}
 		}
 	}
-	//cout << "weak 결과: " << wr << wc << '\n';
 	atk[wr][wc] += n + m;
 	lastAtk[wr][wc] = turn;
+	isPlayed[wr][wc] = true;
+	//cout << "weak 결과: " << wr << wc << '\n';
+	//cout << '\n';
+	//for (int i = 1; i <= n; i++)
+	//{
+	//	for (int j = 1; j <= m; j++)
+	//		cout << atk[i][j] << '\t';
+	//	cout << '\n';
+	//}
 	return { wr, wc };
 }
 pair<int, int> selectStrong()
@@ -77,7 +85,11 @@ pair<int, int> selectStrong()
 	{
 		for (int j = 1; j <= m; j++)
 		{
-			if (atk[i][j] != 0 && i != wr && i != wc)
+			if (i == wr && j == wc)
+			{
+				continue;
+			}
+			if (atk[i][j] > 0)
 			{
 				if (atk[i][j] > sAtk)
 				{
@@ -134,7 +146,7 @@ void tryLaser()
 			if (nRow > n) nRow = 1;
 			if (nCol < 1) nCol = m;
 			if (nCol > m) nCol = 1;
-			if (ch[nRow][nCol] == 0 && atk[nRow][nCol] != 0)
+			if (ch[nRow][nCol] == 0 && atk[nRow][nCol] > 0)
 			{
 				q.push({ nRow, nCol });
 				ch[nRow][nCol] = ch[pos.first][pos.second] + 1;
