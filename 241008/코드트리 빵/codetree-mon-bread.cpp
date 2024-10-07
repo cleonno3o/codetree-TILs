@@ -32,19 +32,23 @@ void initValue()
 }
 void moveToConv()
 {
-	for (int i = 1; i < playTime; i++)
+	for (int i = 1; i < playTime && i <= m; i++)
 	{
 		if (!isArrive[i])
 		{
+			//cout << "플레이어 " << i << "이동중" << "\n";
 			pair<int, int> convPos = conv[i];
 			//cout << "player" << i <<"의 편의점: " << convPos.first << " " << convPos.second << "\n";
 			queue<pair<int, int> > q;
 			pair<int, int> ch[16][16];
-			int firstMove[16][16] = { 0 };
+			int firstMove[16][16] = { -1 };
 			for (int a = 1; a <= n; a++)
 			{
 				for (int b = 1; b <= n; b++)
+				{
 					ch[a][b] = make_pair(-1, -1);
+					firstMove[a][b] = -1;
+				}
 			}
 			q.push({ player[i].first, player[i].second });
 			ch[player[i].first][player[i].second] = { player[i].first, player[i].second };
@@ -54,6 +58,8 @@ void moveToConv()
 				q.pop();
 				if (curPos == convPos)
 				{
+					//cout << "on conv" << "\n";
+					//cout << firstMove[curPos.first][curPos.second] << '\n';
 					break;
 				}
 				for (int j = 0; j < 4; j++)
@@ -63,7 +69,7 @@ void moveToConv()
 					if (nRow > n || nRow < 1 || nCol > n || nCol < 1) continue;
 					if (ch[nRow][nCol] == make_pair(-1, -1) && board[nRow][nCol] != BLOCKED)
 					{
-						if (firstMove[curPos.first][curPos.second] == 0) firstMove[nRow][nCol] = j;
+						if (firstMove[curPos.first][curPos.second] == -1) firstMove[nRow][nCol] = j;
 						else
 							firstMove[nRow][nCol] = firstMove[curPos.first][curPos.second];
 
@@ -72,6 +78,25 @@ void moveToConv()
 					}
 				}
 			}
+			// debug
+			if (playTime > 60)
+			{
+				//for (int a = 1; a <= n; a++)
+				//{
+				//	for (int b = 1; b <= n; b++)
+				//		cout << firstMove[a][b] << " ";
+				//	cout << "\n";
+				//}
+				//cout << "\n";
+				//for (int a = 1; a <= n; a++)
+				//{
+				//	for (int b = 1; b <= n; b++)
+				//		cout << ch[a][b].first << " " << ch[a][b].second << "||\t";
+				//	cout << "\n";
+				//}
+			}
+
+			//cout << "breakd!\n";
 			//for (int a = 1; a <= n; a++)
 			//{
 			//	for (int b = 1; b <= n; b++)
@@ -92,8 +117,11 @@ void moveToConv()
 			//	}
 			//}
 			//player[i] = make_pair(r, c);
+			//cout << "여기서 " << player[i].first << " " << player[i].second << "\n";
 			player[i].first += drow[firstMove[convPos.first][convPos.second]];
 			player[i].second += dcol[firstMove[convPos.first][convPos.second]];
+			//cout << "여기로 " << player[i].first << " " << player[i].second << "\n";
+
 			if (player[i] == conv[i]) isArrive[i] = true;
 		}
 	}
@@ -195,11 +223,12 @@ int main()
 		//for (int i = 1; i <= n; i++)
 		//{
 		//	for (int j = 1; j <= n; j++)
-		//		cout << board[i][j] << ' ';
+		//		cout << board[i][j] << '\t';
 		//	cout << '\n';
 		//}
 		//for (int i = 1; i <= m; i++)
-		//	cout << i  <<"is" << player[i].first << ' ' << player[i].second << "\n";
+		//	if (!isArrive[i])
+		//		cout << i  <<"is" << player[i].first << ' ' << player[i].second << "\n";
 		// 모든 액션완료
 		// 종료되지 않았으면 시간증가
 		if (!isEndGame())
