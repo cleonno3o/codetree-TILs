@@ -6,6 +6,8 @@ int n, m, k;
 int atk[11][11];
 int lastAtk[11][11];
 bool isPlayed[11][11];
+bool strongExist;
+bool weakExist;
 int turn;
 int wr, wc, sr, sc;
 int drow[] = { 0, 1, 0, -1 };
@@ -52,7 +54,7 @@ pair<int, int> selectWeak()
 							wr = i;
 							wc = j;
 						}
-						else if (wr + wc < i + j)
+						else if (wr + wc == i + j)
 						{
 							if (wc < j)
 							{
@@ -67,20 +69,15 @@ pair<int, int> selectWeak()
 	}
 	atk[wr][wc] += n + m;
 	lastAtk[wr][wc] = turn;
-	isPlayed[wr][wc] = true;
+	//isPlayed[wr][wc] = true;
 	//cout << "weak 결과: " << wr << wc << '\n';
-	//cout << '\n';
-	//for (int i = 1; i <= n; i++)
-	//{
-	//	for (int j = 1; j <= m; j++)
-	//		cout << atk[i][j] << '\t';
-	//	cout << '\n';
-	//}
+
 	return { wr, wc };
 }
 pair<int, int> selectStrong()
 {
 	int sAtk = -100;
+	strongExist = false;
 	for (int i = 1; i <= n; i++)
 	{
 		for (int j = 1; j <= m; j++)
@@ -96,6 +93,7 @@ pair<int, int> selectStrong()
 					sAtk = atk[i][j];
 					sr = i;
 					sc = j;
+					strongExist = true;
 				}
 				else if (atk[i][j] == sAtk)
 				{
@@ -103,6 +101,8 @@ pair<int, int> selectStrong()
 					{
 						sr = i;
 						sc = j;
+						strongExist = true;
+
 					}
 					else if (lastAtk[sr][sc] == lastAtk[i][j])
 					{
@@ -110,6 +110,8 @@ pair<int, int> selectStrong()
 						{
 							sr = i;
 							sc = j;
+							strongExist = true;
+
 						}
 						else if (sr + sc == i + j)
 						{
@@ -117,6 +119,8 @@ pair<int, int> selectStrong()
 							{
 								sr = i;
 								sc = j;
+								strongExist = true;
+
 							}
 						}
 					}
@@ -124,6 +128,7 @@ pair<int, int> selectStrong()
 			}
 		}
 	}
+	//cout << "strong 결과: " << sr << sc << '\n';
 	return { sr, sc };
 }
 void tryLaser()
@@ -233,6 +238,7 @@ void tryBomb()
 		}
 		atk[sr][sc] -= atk[wr][wc];
 		isPlayed[sr][sc] = true;
+		isAttacked = true;
 	}
 }
 void repair()
@@ -265,8 +271,19 @@ void playTurn()
 	}
 	selectWeak();
 	selectStrong();
-	tryLaser();
-	tryBomb();
+	//cout << '\n';
+	//for (int i = 1; i <= n; i++)
+	//{
+	//	for (int j = 1; j <= m; j++)
+	//		cout << atk[i][j] << "\t\t";
+	//	cout << '\n';
+	//}
+	if (strongExist)
+	{
+		isPlayed[wr][wc] = true;
+		tryLaser();
+		tryBomb();
+	}
 	repair();
 }
 int main()
@@ -281,12 +298,22 @@ int main()
 	}
 	for (turn = 1; turn <= k; turn++)
 	{
+		//cout << "turn: " << turn << "\n";
 		playTurn();
+		int cnt = 0;
+		for (int i = 1; i <= n; i++)
+		{
+			for (int j = 1; j <= n; j++)
+			{
+				if (atk[i][j] > 0) cnt++;
+			}
+		}
+		if (cnt == 1) break;
 		//cout << "결과\n";
 		//for (int i = 1; i <= n; i++)
 		//{
 		//	for (int j = 1; j <= m; j++)
-		//		cout << atk[i][j] << '\t';
+		//		cout << atk[i][j] << "\t\t";
 		//	cout << '\n';
 		//}
 	}
