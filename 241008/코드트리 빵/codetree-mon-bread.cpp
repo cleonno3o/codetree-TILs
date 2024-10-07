@@ -32,21 +32,18 @@ void initValue()
 }
 void moveToConv()
 {
-	for (int i = 1; i < playTime && i <= m; i++)
+	for (int i = 1; i < playTime && i <=m; i++)
 	{
 		if (!isArrive[i])
 		{
 			pair<int, int> convPos = conv[i];
+			//cout << "player" << i <<"의 편의점: " << convPos.first << " " << convPos.second << "\n";
 			queue<pair<int, int> > q;
 			pair<int, int> ch[16][16];
-			int firstMove[16][16];
 			for (int a = 1; a <= n; a++)
 			{
 				for (int b = 1; b <= n; b++)
-				{
 					ch[a][b] = make_pair(-1, -1);
-					firstMove[a][b] = -1;
-				}
 			}
 			q.push({ player[i].first, player[i].second });
 			ch[player[i].first][player[i].second] = { player[i].first, player[i].second };
@@ -65,17 +62,31 @@ void moveToConv()
 					if (nRow > n || nRow < 1 || nCol > n || nCol < 1) continue;
 					if (ch[nRow][nCol] == make_pair(-1, -1) && board[nRow][nCol] != BLOCKED)
 					{
-						if (firstMove[curPos.first][curPos.second] == -1) firstMove[nRow][nCol] = j;
-						else
-							firstMove[nRow][nCol] = firstMove[curPos.first][curPos.second];
-
 						q.push({ nRow, nCol });
 						ch[nRow][nCol] = curPos;
 					}
 				}
 			}
-			player[i].first += drow[firstMove[convPos.first][convPos.second]];
-			player[i].second += dcol[firstMove[convPos.first][convPos.second]];
+			//for (int a = 1; a <= n; a++)
+			//{
+			//	for (int b = 1; b <= n; b++)
+			//		cout << ch[a][b].first << " " << ch[a][b].second << "\t||";
+			//	cout << "\n";
+			//}
+			int r = convPos.first;
+			int c = convPos.second;
+			while (1)
+			{
+				pair<int, int> prev = ch[r][c];
+				//cout << "이전: " << prev.first << " " << prev.second << "\n";
+				if (prev == player[i]) break;
+				else
+				{
+					r = prev.first;
+					c = prev.second;
+				}
+			}
+			player[i] = make_pair(r, c);
 			if (player[i] == conv[i]) isArrive[i] = true;
 		}
 	}
