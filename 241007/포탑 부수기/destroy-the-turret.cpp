@@ -17,15 +17,15 @@ int drow8[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 int dcol8[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 int backRow[] = { 1, 0, -1, 0 };
 int backCol[] = { 0, 1, 0, -1 };
-struct CheckItem {
-	pair <int, int> pos = { 0,0 };
-	pair <int, int> prevPos = { 0, 0 };
+//struct CheckItem {
+	//pair <int, int> pos = { 0,0 };
+	//pair <int, int> prevPos = { 0, 0 };
 	//CheckItem(pair<int, int> _pos, pair<int, int> _prevPos)
 	//{
 	//	pair <int, int> pos = _pos;
 	//	pair <int, int> prevPos = _prevPos;
 	//}
-};
+//};
 //int ch[11][11];
 bool isAttacked = false;
 pair<int, int> selectWeak()
@@ -80,7 +80,8 @@ pair<int, int> selectWeak()
 	}
 	atk[wr][wc] += (n + m);
 	lastAtk[wr][wc] = turn;
-	//isPlayed[wr][wc] = true;
+	isPlayed[wr][wc] = true;
+
 	//cout << "weak 결과: " << wr << wc << '\n';
 
 	return { wr, wc };
@@ -144,24 +145,15 @@ pair<int, int> selectStrong()
 void tryLaser()
 {
 	isAttacked = false;
-	// 도착지점까지 경로 구하기
-	pair<int, int> ch[11][11];
-	for (int i = 1; i <= n; i++)
+	// 최단 거리 체크
+	int chMin[11][11] = { 0 };
+	queue<pair<int, int> > qMin;
+	qMin.push({ wr, wc });
+	chMin[wr][wc] = 1;
+	while (!qMin.empty())
 	{
-		for (int j = 1; j <= m; j++)
-		{
-			ch[i][j] = { -1, -1 };
-		}
-	}
-	queue<pair<int, int> > q;
-	q.push({ wr, wc });
-	ch[wr][wc] = { wr, wc };
-	//ch[wr][wc].pos = { wr, wc };
-	//ch[wr][wc].prevPos = { wr, wc };
-	while (!q.empty())
-	{
-		pair<int, int> pos = q.front();
-		q.pop();
+		pair<int, int> pos = qMin.front();
+		qMin.pop();
 		if (pos.first == sr && pos.second == sc) break;
 		for (int i = 0; i < 4; i++)
 		{
@@ -171,15 +163,53 @@ void tryLaser()
 			if (nRow > n) nRow = 1;
 			if (nCol < 1) nCol = m;
 			if (nCol > m) nCol = 1;
+			if (chMin[nRow][nCol] == 0)
+			{
+				qMin.push({ nRow, nCol });
+				chMin[nRow][nCol] = chMin[pos.first][pos.second];
+			}
+		}
+	}
+	int minDist = chMin[sr][sc];
+	// 도착지점까지 경로 구하기
+	pair<int, int> ch[11][11];
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= m; j++)
+		{
+			ch[i][j] = { -1, -1 };
+		}
+	}
+	queue<pair<pair<int, int>, int> > q;
+	q.push({ { wr, wc }, 1 });
+	ch[wr][wc] = { wr, wc };
+	int cdist = -1;
+	while (!q.empty())
+	{
+		pair<pair<int, int>, int> pos = q.front();
+		q.pop();
+		if (pos.first.first == sr && pos.first.second == sc)
+		{
+			cdist = pos.second;
+			break;
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			int nRow = pos.first.first + drow[i];
+			int nCol = pos.first.second + dcol[i];
+			if (nRow < 1) nRow = n;
+			if (nRow > n) nRow = 1;
+			if (nCol < 1) nCol = m;
+			if (nCol > m) nCol = 1;
 			if (ch[nRow][nCol] == make_pair(-1,-1) && atk[nRow][nCol] > 0)
 			{
-				q.push({ nRow, nCol });
-				ch[nRow][nCol] = { pos.first, pos.second };
+				q.push({ { nRow, nCol }, pos.second });
+				ch[nRow][nCol] = { pos.first.first, pos.first.second };
 			}
 		}
 	}
 	// 경로가 없으면 공격하지 않음
-	if (ch[sr][sc] == make_pair(-1, -1)) isAttacked = false;
+	if (ch[sr][sc] == make_pair(-1, -1) || cdist > minDist) isAttacked = false;
 	// 경로가 존재하면
 	else
 	{
@@ -297,6 +327,7 @@ void tryBomb()
 			if (nRow > n) nRow = 1;
 			if (nCol < 1) nCol = m;
 			if (nCol > m) nCol = 1;
+			if (nRow == wr && nCol == wc) continue;
 			if (atk[nRow][nCol] > 0)
 			{
 				atk[nRow][nCol] -= atk[wr][wc] / 2;
@@ -316,7 +347,6 @@ void repair()
 		{
 			if (i == wr && j == wc)
 			{
-				//cout <<"똑같노 " << i << j << '\n';
 				continue;
 			}
 			if (atk[i][j] < 0)
@@ -326,7 +356,6 @@ void repair()
 			}
 			if (!isPlayed[i][j] && atk[i][j] > 0)
 			{
-				//cout << "더하기" << i << j<< '\n';
 				atk[i][j]++;
 			}
 		}
@@ -342,14 +371,13 @@ void playTurn()
 	}
 	selectWeak();
 	selectStrong();
-	//cout << '\n';
+	//cout << "atk 보드 상황\n";
 	//for (int i = 1; i <= n; i++)
 	//{
 	//	for (int j = 1; j <= m; j++)
 	//		cout << atk[i][j] << "\t\t";
 	//	cout << '\n';
 	//}
-	isPlayed[wr][wc] = true;
 	tryLaser();
 	tryBomb();
 	repair();
