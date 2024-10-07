@@ -34,58 +34,61 @@ void moveToConv()
 {
 	for (int i = 1; i < playTime; i++)
 	{
-		pair<int, int> convPos = conv[i];
-		//cout << "player" << i <<"의 편의점: " << convPos.first << " " << convPos.second << "\n";
-		queue<pair<int, int> > q;
-		pair<int, int> ch[16][16];
-		for (int a = 1; a <= n; a++)
+		if (!isArrive[i])
 		{
-			for (int b = 1; b <= n; b++)
-				ch[a][b] = make_pair(-1, -1);
-		}
-		q.push({ player[i].first, player[i].second });
-		ch[player[i].first][player[i].second] = { player[i].first, player[i].second };
-		while (!q.empty())
-		{
-			pair<int, int> curPos = q.front();
-			q.pop();
-			if (curPos == convPos)
+			pair<int, int> convPos = conv[i];
+			//cout << "player" << i <<"의 편의점: " << convPos.first << " " << convPos.second << "\n";
+			queue<pair<int, int> > q;
+			pair<int, int> ch[16][16];
+			for (int a = 1; a <= n; a++)
 			{
-				break;
+				for (int b = 1; b <= n; b++)
+					ch[a][b] = make_pair(-1, -1);
 			}
-			for (int j = 0; j < 4; j++)
+			q.push({ player[i].first, player[i].second });
+			ch[player[i].first][player[i].second] = { player[i].first, player[i].second };
+			while (!q.empty())
 			{
-				int nRow = curPos.first + drow[j];
-				int nCol = curPos.second + dcol[j];
-				if (nRow > n || nRow < 1 || nCol > n || nCol < 1) continue;
-				if (ch[nRow][nCol] == make_pair(-1, -1) && board[nRow][nCol] != BLOCKED)
+				pair<int, int> curPos = q.front();
+				q.pop();
+				if (curPos == convPos)
 				{
-					q.push({ nRow, nCol });
-					ch[nRow][nCol] = curPos;
+					break;
+				}
+				for (int j = 0; j < 4; j++)
+				{
+					int nRow = curPos.first + drow[j];
+					int nCol = curPos.second + dcol[j];
+					if (nRow > n || nRow < 1 || nCol > n || nCol < 1) continue;
+					if (ch[nRow][nCol] == make_pair(-1, -1) && board[nRow][nCol] != BLOCKED)
+					{
+						q.push({ nRow, nCol });
+						ch[nRow][nCol] = curPos;
+					}
 				}
 			}
-		}
-		//for (int a = 1; a <= n; a++)
-		//{
-		//	for (int b = 1; b <= n; b++)
-		//		cout << ch[a][b].first << " " << ch[a][b].second << "\t||";
-		//	cout << "\n";
-		//}
-		int r = convPos.first;
-		int c = convPos.second;
-		while (1)
-		{
-			pair<int, int> prev = ch[r][c];
-			//cout << "이전: " << prev.first << " " << prev.second << "\n";
-			if (prev == player[i]) break;
-			else
+			//for (int a = 1; a <= n; a++)
+			//{
+			//	for (int b = 1; b <= n; b++)
+			//		cout << ch[a][b].first << " " << ch[a][b].second << "\t||";
+			//	cout << "\n";
+			//}
+			int r = convPos.first;
+			int c = convPos.second;
+			while (1)
 			{
-				r = prev.first;
-				c = prev.second;
+				pair<int, int> prev = ch[r][c];
+				//cout << "이전: " << prev.first << " " << prev.second << "\n";
+				if (prev == player[i]) break;
+				else
+				{
+					r = prev.first;
+					c = prev.second;
+				}
 			}
+			player[i] = make_pair(r, c);
+			if (player[i] == conv[i]) isArrive[i] = true;
 		}
-		player[i] = make_pair(r, c);
-		if (player[i] == conv[i]) isArrive[i] = true;
 	}
 }
 void blockBoard()
@@ -139,20 +142,23 @@ void newPlayerIn()
 		//		cout << ch[i][j] << " ";
 		//	cout << "\n";
 		//}
+		bool isSelected = false;
 		for (int i = 1; i <= n; i++)
 		{
 			for (int j = 1; j <= n; j++)
 			{
-				if (board[i][j] == 1 && ch[i][j] == 1)
+				if (board[i][j] == 1 && ch[i][j] == 1 && !isSelected)
 				{
 					r = i;
 					c = j;
+					isSelected = true;
 				}
 			}
 		}
 		// 선택 완료!
 		board[r][c] = BLOCKED;
 		player[playTime] = make_pair(r, c);
+		//cout << "플레이어 " << playTime  << "여기로드옴 " << r << " " << c << '\n';
 	}
 }
 bool isEndGame()
