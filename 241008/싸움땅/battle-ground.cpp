@@ -47,8 +47,6 @@ void initValue()
 }
 void getGun(int playerIdx, int row, int col)
 {
-	//cout << "getgun\n";
-	UpdatePlayerInfo(playerIdx, row, col);
 	// 보드의 총이 더 세면
 	if (!board[row][col].empty() && gun[playerIdx] < board[row][col].top())
 	{
@@ -57,7 +55,6 @@ void getGun(int playerIdx, int row, int col)
 		gun[playerIdx] = board[row][col].top();
 		board[row][col].pop();
 		board[row][col].push(prevGun);
-		//cout << playerIdx << "가 " << prevGun << "에서 " << gun[playerIdx] << "\n";
 		// 이동 종료 내위치 업데이트
 	}
 	updatePlyerBoard(playerIdx, row, col);
@@ -81,19 +78,13 @@ void fight(int p1, int p2, int row, int col)
 	int winner, loser;
 	UpdatePlayerInfo(p1, row, col);
 	UpdatePlayerInfo(p2, row, col);
-	//cout << "fight info\n";
-	//cout << p1 << ": ab,gun " << ability[p1] << " " << gun[p1] << "\n";
-	//cout << p2 << ": ab,gun " << ability[p2] << " " << gun[p2] << "\n";
 	if (ability[p1] + gun[p1] > ability[p2] + gun[p2])
 	{
-		//cout << "case1\n";
 		winner = p1;
 		loser = p2;
 	}
 	else if (ability[p1] + gun[p1] < ability[p2] + gun[p2])
 	{
-		//cout << "case2\n";
-
 		winner = p2;
 		loser = p1;
 	}
@@ -101,14 +92,11 @@ void fight(int p1, int p2, int row, int col)
 	{
 		if (ability[p1] > ability[p2])
 		{
-			//cout << "case3\n";
-
 			winner = p1;
 			loser = p2;
 		}
 		else
 		{
-			//cout << "case4\n";
 			winner = p2;
 			loser = p1;
 		}
@@ -123,17 +111,14 @@ void fight(int p1, int p2, int row, int col)
 	int nRow, nCol;
 	while (1)
 	{
-		//cout << dir[loser] << "\n";
 		nRow = row + drow[dir[loser]];
 		nCol = col + dcol[dir[loser]];
-		//cout << nRow << " " << nCol << "값은 " << playerBoard[nRow][nCol] <<"\n";
 		if (nRow > n || nRow < 1 || nCol > n || nCol < 1 || playerBoard[nRow][nCol] > 0)
 		{
 			dir[loser] = rotateClock(dir[loser]);
 		}
 		else break;
 	}
-	//cout << "진사람 갈곳 : " << loser << "가 " << dir[loser] << " " << nRow << " " << nCol << "으로\n";
 	getGun(loser, nRow, nCol);
 	// 승자는 버린총을 비교
 	getGun(winner, row, col);
@@ -169,16 +154,13 @@ void movePlayer()
 			nRow = player[i].first + drow[dir[i]];
 			nCol = player[i].second + dcol[dir[i]];
 		}
-		//cout << i << "의 다음위치는 " << nRow << " " << nCol << "\n";
 		// 다음칸이 플레이어면
 		if (playerBoard[nRow][nCol] > 0)
 		{
 			fight(i, playerBoard[nRow][nCol], nRow, nCol);
 		}
-		// 다음칸이 총이면
 		else
 		{
-			//cout << "총칸이군\n";
 			getGun(i, nRow, nCol);
 		}
 	}
@@ -188,46 +170,8 @@ int main()
 	initValue();
 	for (int i = 1; i <= k; i++)
 	{
-		//cout << "======이동전======\n";
-		//cout << "보드판\n";
-		//for (int a = 1; a <= n; a++)
-		//{
-			//for (int b = 1; b <= n; b++)
-			//{
-				//if (!board[a][b].empty())
-					//cout << board[a][b].top() << "\t";
-				//else cout << 0 << "\t";
-			//}
-				
-			//cout << "\n";
-		//}
-		//cout << "플레이어판\n";
-		//for (int a = 1; a <= n; a++)
-		//{
-		//	for (int b = 1; b <= n; b++)
-		//		cout << playerBoard[a][b] << "\t";
-		//	cout << "\n";
-		//}
 		movePlayer();
-		//cout << "보드판\n";
-		//for (int a = 1; a <= n; a++)
-		//{
-		//	for (int b = 1; b <= n; b++)
-		//		cout << board[a][b] << "\t";
-		//	cout << "\n";
-		//}
-		//cout << "플레이어판\n";
-		//for (int a = 1; a <= n; a++)
-		//{
-		//	for (int b = 1; b <= n; b++)
-		//		cout << playerBoard[a][b] << "\t";
-		//	cout << "\n";
-		//}
-		//cout << "점수\n";
-		//for (int i = 1; i <= m; i++)
-		//	cout << score[i] << "\t";
-		//cout << "\n";
-	}
+    }
 	// 최종 점수 출력
 	for (int i = 1; i <= m; i++)
 	{
