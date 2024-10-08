@@ -140,6 +140,7 @@ void moveTeam()
 						break;
 					}
 				}
+				break;
 			}
 		}
 	}
@@ -210,26 +211,26 @@ void shootBall()
 		queue<pair<int, int> > q;
 		q.push(teams[targetTeam].head);
 		ch[teams[targetTeam].head.first][teams[targetTeam].head.second] = 1;
+		int pathlen = 1;
 		while (!q.empty())
 		{
 			pair<int, int> curpos = q.front();
 			q.pop();
-			if (curpos == pos)
-			{
-				score += ch[pos.first][pos.second] * ch[pos.first][pos.second];
-			}
+			if (pathlen < ch[curpos.first][curpos.second]) pathlen = ch[curpos.first][curpos.second];
 			for (int i = 0; i < 4; i++)
 			{
 				int nRow = curpos.first + drow[i];
 				int nCol = curpos.second + dcol[i];
 				if (nRow > n || nRow < 1 || nCol > n || nCol < 1) continue;
-				if (ch[nRow][nCol] == 0 && board[nRow][nCol] == 2 || board[nRow][nCol] == 3)
+				if (ch[nRow][nCol] == 0 && board[nRow][nCol] == 2)
 				{
 					ch[nRow][nCol] = ch[curpos.first][curpos.second] + 1;
 					q.push({ nRow, nCol });
 				}
 			}
 		}
+		ch[teams[targetTeam].tail.first][teams[targetTeam].tail.second] = pathlen + 1;
+		score += ch[pos.first][pos.second] * ch[pos.first][pos.second];
 		// 공격당한 것 반전
 		pair<int, int> headBack = teams[targetTeam].head;
 		teams[targetTeam].head = teams[targetTeam].tail;
@@ -283,6 +284,7 @@ int main()
 		//	}
 		//	cout << "\n";
 		//}
+		//cout << score << "\n";
 	}
 	cout << score << "\n";
 	//for (int i = 1; i <= m; i++)
