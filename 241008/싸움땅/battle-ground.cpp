@@ -47,6 +47,7 @@ void initValue()
 }
 void getGun(int playerIdx, int row, int col)
 {
+	UpdatePlayerInfo(playerIdx, row, col);
 	// 보드의 총이 더 세면
 	if (!board[row][col].empty() && gun[playerIdx] < board[row][col].top())
 	{
