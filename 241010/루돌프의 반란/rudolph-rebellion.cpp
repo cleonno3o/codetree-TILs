@@ -34,7 +34,7 @@ void printScore()
 }
 int getCloseSanta()
 {
-	int minDist = 10000;
+	int minDist = 2147000000;
 	int santaIdx = 0;
 	for (int i = 1; i <= totalSanta; i++)
 	{
@@ -130,6 +130,7 @@ void kickSanta(int power, int drow, int dcol, int row, int col)
 void rooPlay()
 {
 	int santaIdx = getCloseSanta();
+	//cout << "가장가까운 녀석 " << santa[santaIdx].first << " " << santa[santaIdx].second << "\n";
 	// 가장가까운 산타로 이동
 	int nrow, ncol;
 	nrow = ncol = 0;
@@ -137,7 +138,7 @@ void rooPlay()
 	if (roo.first > santa[santaIdx].first) nrow = -1;
 	if (roo.second < santa[santaIdx].second) ncol = 1;
 	if (roo.second > santa[santaIdx].second) ncol = -1;
-
+	//cout << "루이동방향" << nrow << " " << ncol << "\n";
 	roo.first += nrow;
 	roo.second += ncol;
 	// 산타와 만나면 충돌 발생
@@ -240,6 +241,10 @@ int main()
 		//	}
 		//	cout << "\n";
 		//}
+		//cout << "산타 위치" << "\n";
+		//for (int i = 1; i <= totalSanta; i++)
+		//	if (!die[i])
+		//		cout << santa[i].first << " " << santa[i].second <<"\n";
 		endTurn();
 		//cout << "결과\n";
 		//for (int i = 1; i <= mapSize; i++)
