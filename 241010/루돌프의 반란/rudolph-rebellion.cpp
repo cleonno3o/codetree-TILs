@@ -69,7 +69,6 @@ void kickSanta(int power, int drow, int dcol, int row, int col)
 	score[idx] += power;
 	int nRow = row + drow * power;
 	int nCol = col + dcol * power;
-	//cout << "충돌한 산타 위치" << nRow << " " << nCol << "\n";
 	targets.push_back(make_tuple(idx, nRow, nCol));
 	// 루돌프와 만난 산타가 간곳이 맵 밖임 -> 사망
 	if (nRow > mapSize || nRow < 1 || nCol > mapSize || nCol < 1) die[idx] = true;
@@ -78,8 +77,6 @@ void kickSanta(int power, int drow, int dcol, int row, int col)
 	{
 		while (1)
 		{
-			//cout << "반복..\n";
-			//cout << drow << " " << dcol << "\n";
 			// 아무도 안만남
 			if (board[nRow][nCol] == 0)
 			{
@@ -109,7 +106,6 @@ void kickSanta(int power, int drow, int dcol, int row, int col)
 		tie(sIdx, nextRow, nextCol) = targets[i];
 		if (!die[sIdx])
 		{
-			//cout << sIdx << " " << nextRow << " " << nextCol << "\n";
 			board[santa[sIdx].first][santa[sIdx].second] = 0;
 			santa[sIdx] = make_pair(nextRow, nextCol);
 			board[santa[sIdx].first][santa[sIdx].second] = sIdx;
@@ -124,7 +120,6 @@ void kickSanta(int power, int drow, int dcol, int row, int col)
 void rooPlay()
 {
 	int santaIdx = getCloseSanta();
-	//cout << "가장가까운 녀석 " << santa[santaIdx].first << " " << santa[santaIdx].second << "\n";
 	// 가장가까운 산타로 이동
 	int nrow, ncol;
 	nrow = ncol = 0;
@@ -132,14 +127,11 @@ void rooPlay()
 	if (roo.first > santa[santaIdx].first) nrow = -1;
 	if (roo.second < santa[santaIdx].second) ncol = 1;
 	if (roo.second > santa[santaIdx].second) ncol = -1;
-	//cout << "루이동방향" << nrow << " " << ncol << "\n";
 	roo.first += nrow;
 	roo.second += ncol;
 	// 산타와 만나면 충돌 발생
 	if (board[roo.first][roo.second] != 0)
 	{
-		//cout << turn << " ";
-		//cout << "루돌프 선빵\n";
 		kickSanta(rooPower, nrow, ncol, roo.first, roo.second);
 	}
 }
@@ -179,14 +171,8 @@ void sanPlay()
 
 				if (santa[i] == roo)
 				{
-					//cout << santa[i].first << " " << santa[i].second << "\n";
 					kickSanta(santaPower, -drow[dir], -dcol[dir], santa[i].first, santa[i].second);
 				}
-				//else if (board[santa[i].first][santa[i].second] == 0)
-				//{
-				//	board[prevPos.first][prevPos.second] = 0;
-				//	board[santa[i].first][santa[i].second] = i;
-				//}
 			}
 		}
 	}
@@ -211,59 +197,9 @@ int main()
 	for (turn = 1; turn <= totalTurn; turn++)
 	{
 		if (isEndGame()) break;
-		//cout <<"[[[[[[[[[[  " << turn << "  ]]]]]]]]]]\n";
-		//cout << "이전\n";
-		//for (int i = 1; i <= mapSize; i++)
-		//{
-		//	for (int j = 1; j <= mapSize; j++)
-		//	{
-		//		cout << board[i][j] << "\t";
-		//	}
-		//	cout << "\n";
-		//}
 		rooPlay();
-		//cout << "루돌프 움직임\n";
-		//cout << "루 위치: " << roo.first << " " << roo.second << "\n";
-		//for (int i = 1; i <= mapSize; i++)
-		//{
-		//	for (int j = 1; j <= mapSize; j++)
-		//	{
-		//		cout << board[i][j] << "\t";
-		//	}
-		//	cout << "\n";
-		//}
 		sanPlay();
-		//cout << "산타 움직임\n";
-		//for (int i = 1; i <= mapSize; i++)
-		//{
-		//	for (int j = 1; j <= mapSize; j++)
-		//	{
-		//		cout << board[i][j] << "\t";
-		//	}
-		//	cout << "\n";
-		//}
-		//cout << "산타 위치" << "\n";
-		//for (int i = 1; i <= totalSanta; i++)
-		//	if (!die[i])
-		//		cout << santa[i].first << " " << santa[i].second <<"\n";
 		endTurn();
-		//cout << "결과\n";
-		//for (int i = 1; i <= mapSize; i++)
-		//{
-		//	for (int j = 1; j <= mapSize; j++)
-		//	{
-		//		cout << board[i][j] << "\t";
-		//	}
-		//	cout << "\n";
-		//}
-		//cout << "점수\n";
-		//printScore(); cout << "\n";
-		//cout << "사망현황\n";
-		//for (int i = 1; i <= totalSanta; i++)
-		//{
-		//	if (die[i]) cout << "운명 ";
-		//	else cout << "생존 ";
-		//}
 	}
 	printScore();
 }
