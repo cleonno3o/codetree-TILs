@@ -1,8 +1,6 @@
 #include <iostream>
-#include <queue>
 #include <vector>
 #include <tuple>
-#define ROO -1
 using namespace std;
 int mapSize, totalTurn, totalSanta, rooPower, santaPower;
 int turn;
