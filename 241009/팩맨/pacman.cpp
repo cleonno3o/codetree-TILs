@@ -21,7 +21,7 @@ int drow[] = { -100, -1, -1, 0, 1, 1, 1, 0, -1 };
 int dcol[] = { -100, 0, -1, -1, -1, 0, 1, 1, 1 };
 int pacrow[] = { -1, 0, 1, 0 };
 int paccol[] = { 0, -1, 0, 1 };
-bool chPac[5][5];
+int chPac[5][5];
 queue<Egg> eggs;
 void putEgg()
 {
@@ -104,7 +104,7 @@ void movePac(int row, int col, int pathlen, int eat)
 		for (int i = 1; i <= 4; i++)
 		{
 			for (int j = 1; j <= 4; j++)
-				chPac[i][j] = false;
+				chPac[i][j] = mon[i]	[j].size();
 		}
 		maxEat = -1;
 	}
@@ -125,13 +125,14 @@ void movePac(int row, int col, int pathlen, int eat)
 			int nCol = col + paccol[i];
 			if (nRow > 4 || nRow < 1 || nCol > 4 || nCol < 1) continue;
 			//if (chPac[nRow][nCol]) continue;
-			//chPac[nRow][nCol] = true;
-			eat += (int) mon[nRow][nCol].size();
+			int back = chPac[nRow][nCol];
+			eat += (int) back;
+			chPac[nRow][nCol] = 0;
 			path[pathlen + 1] = { nRow, nCol };
 			movePac(nRow, nCol, pathlen + 1, eat);
-			eat -= (int) mon[nRow][nCol].size();
+			eat -= (int) back;
 			path[pathlen + 1] = { -1, -1 };
-			//chPac[nRow][nCol] = false;
+			chPac[nRow][nCol] = back;
 		}
 	}
 }
