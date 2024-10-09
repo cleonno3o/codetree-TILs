@@ -29,7 +29,7 @@ void putEgg()
 	{
 		for (int j = 1; j <= 4; j++)
 		{
-			int monCnt = mon[i][j].size();
+			int monCnt = (int) mon[i][j].size();
 			for (int k = 1; k <= monCnt; k++)
 			{
 				int dir = mon[i][j].front();
@@ -53,21 +53,22 @@ void tryMove()
 	{
 		for (int j = 1; j <= 4; j++)
 		{
-			int monCnt = mon[i][j].size();
+			int monCnt = (int) mon[i][j].size();
 			for (int k = 1; k <= monCnt; k++)
 			{
 				//cout << i << j << " 수: " << monCnt << "\n";
 				int dir = mon[i][j].front();
 				mon[i][j].pop();
-				bool isMove = false;
 				int nRow, nCol;
+				bool isMove = false;
+				//cout << "원래 방향 " << dir << " ";
 				for (int l = 1; l <= 8; l++)
 				{
 					nRow = i + drow[dir];
 					nCol = j + dcol[dir];
 					// 초과 / 시체 / 팩맨인 경우 회전
 					if (nRow > 4 || nRow < 1 || nCol > 4 || nCol < 1 ||
-						dead[nRow][nCol].size() != 0 ||
+						!dead[nRow][nCol].empty() ||
 						(nRow == pac.first && nCol == pac.second))
 					{
 						dir = rotate45(dir);
@@ -77,8 +78,8 @@ void tryMove()
 						isMove = true;
 						break;
 					}
-
 				}
+				//cout << i << " " << j << "가 " << dir << "로\n";
 				if (isMove)
 				{
 					newMon[nRow][nCol].push(dir);
@@ -106,7 +107,6 @@ void movePac(int row, int col, int pathlen, int eat)
 				chPac[i][j] = false;
 		}
 		maxEat = -1;
-		chPac[row][col] = true;
 	}
 	if (pathlen == 3)
 	{
@@ -126,10 +126,10 @@ void movePac(int row, int col, int pathlen, int eat)
 			if (nRow > 4 || nRow < 1 || nCol > 4 || nCol < 1) continue;
 			if (chPac[nRow][nCol]) continue;
 			chPac[nRow][nCol] = true;
-			eat += mon[nRow][nCol].size();
+			eat += (int) mon[nRow][nCol].size();
 			path[pathlen + 1] = { nRow, nCol };
 			movePac(nRow, nCol, pathlen + 1, eat);
-			eat -= mon[nRow][nCol].size();
+			eat -= (int) mon[nRow][nCol].size();
 			path[pathlen + 1] = { -1, -1 };
 			chPac[nRow][nCol] = false;
 		}
@@ -160,7 +160,7 @@ void cleanDead()
 	{
 		for (int j = 1; j <= 4; j++)
 		{
-			int deadCnt = dead[i][j].size();
+			int deadCnt = (int) dead[i][j].size();
 			for (int k = 1; k <= deadCnt; k++)
 			{
 				int due = dead[i][j].front();
@@ -176,6 +176,7 @@ void spawnMon()
 	while (!eggs.empty())
 	{
 		Egg egg = eggs.front();
+		//cout << egg.r << " " << egg.c << "가 부화 방향 " << egg.dir << "\n";
 		mon[egg.r][egg.c].push(egg.dir);
 		eggs.pop();
 	}
@@ -195,6 +196,14 @@ int main()
 	for (int i = 1; i <= t; i++)
 	{
 		//cout << i << "===========\n";
+		//for (int k = 1; k <= 4; k++)
+		//{
+		//	for (int j = 1; j <= 4; j++)
+		//		cout << mon[k][j].size() << " ";
+		//	cout << "\n";
+		//};
+		//cout << "===\n";
+
 		putEgg();
 		tryMove();
 		//for (int k = 1; k <= 4; k++)
@@ -203,6 +212,7 @@ int main()
 		//		cout << mon[k][j].size() << " ";
 		//	cout << "\n";
 		//}
+		//cout << "===\n";
 		movePac(pac.first, pac.second, 0, 0);
 		eatMonAndMove();
 		cleanDead();
@@ -221,7 +231,7 @@ int main()
 	for (int i = 1; i <= 4; i++)
 	{
 		for (int j = 1; j <= 4; j++)
-			res += mon[i][j].size();
+			res += (int) mon[i][j].size();
 	}
 	cout << res;
 }
