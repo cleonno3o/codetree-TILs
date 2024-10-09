@@ -56,12 +56,10 @@ void tryMove()
 			int monCnt = (int) mon[i][j].size();
 			for (int k = 1; k <= monCnt; k++)
 			{
-				//cout << i << j << " 수: " << monCnt << "\n";
 				int dir = mon[i][j].front();
 				mon[i][j].pop();
 				int nRow, nCol;
 				bool isMove = false;
-				//cout << "원래 방향 " << dir << " ";
 				for (int l = 1; l <= 8; l++)
 				{
 					nRow = i + drow[dir];
@@ -79,7 +77,6 @@ void tryMove()
 						break;
 					}
 				}
-				//cout << i << " " << j << "가 " << dir << "로\n";
 				if (isMove)
 				{
 					newMon[nRow][nCol].push(dir);
@@ -124,7 +121,6 @@ void movePac(int row, int col, int pathlen, int eat)
 			int nRow = row + pacrow[i];
 			int nCol = col + paccol[i];
 			if (nRow > 4 || nRow < 1 || nCol > 4 || nCol < 1) continue;
-			//if (chPac[nRow][nCol]) continue;
 			int back = chPac[nRow][nCol];
 			eat += (int) back;
 			chPac[nRow][nCol] = 0;
@@ -138,12 +134,9 @@ void movePac(int row, int col, int pathlen, int eat)
 }
 void eatMonAndMove()
 {
-	//cout << "경로: \n";
-	//cout << maxEat << "\n";
 	for (int i = 1; i <= 3; i++)
 	{
 		pair<int, int> pos = maxPath[i];
-		//cout << pos.first << " " << pos.second << "\n";
 		queue<int>& mq = mon[pos.first][pos.second];
 		while (!mq.empty())
 		{
@@ -152,8 +145,6 @@ void eatMonAndMove()
 		}
 	}
 	pac = maxPath[3];
-	//cout << "팩맨\n";
-	//cout << pac.first << " " << pac.second << "\n";
 }
 void cleanDead()
 {
@@ -177,7 +168,6 @@ void spawnMon()
 	while (!eggs.empty())
 	{
 		Egg egg = eggs.front();
-		//cout << egg.r << " " << egg.c << "가 부화 방향 " << egg.dir << "\n";
 		mon[egg.r][egg.c].push(egg.dir);
 		eggs.pop();
 	}
@@ -196,37 +186,12 @@ int main()
 	}
 	for (int i = 1; i <= t; i++)
 	{
-		//cout << i << "===========\n";
-		//for (int k = 1; k <= 4; k++)
-		//{
-		//	for (int j = 1; j <= 4; j++)
-		//		cout << mon[k][j].size() << " ";
-		//	cout << "\n";
-		//};
-		//cout << "===\n";
-
 		putEgg();
 		tryMove();
-		//for (int k = 1; k <= 4; k++)
-		//{
-		//	for (int j = 1; j <= 4; j++)
-		//		cout << mon[k][j].size() << " ";
-		//	cout << "\n";
-		//}
-		//cout << "===\n";
 		movePac(pac.first, pac.second, 0, 0);
 		eatMonAndMove();
 		cleanDead();
 		spawnMon();
-		//for (int k = 1; k <= 4; k++)
-		//{
-		//	for (int j = 1; j <= 4; j++)
-		//		cout << dead[k][j].size() << " ";
-		//	cout << "\n";
-		//}
-		//cout << "최대경로\n";
-		//for (int k = 1; k <= 3; k++)
-		//	cout << maxPath[i].first << " " << maxPath[i].second << "\n";
 	}
 	int res = 0;
 	for (int i = 1; i <= 4; i++)
