@@ -124,14 +124,14 @@ void movePac(int row, int col, int pathlen, int eat)
 			int nRow = row + pacrow[i];
 			int nCol = col + paccol[i];
 			if (nRow > 4 || nRow < 1 || nCol > 4 || nCol < 1) continue;
-			if (chPac[nRow][nCol]) continue;
-			chPac[nRow][nCol] = true;
+			//if (chPac[nRow][nCol]) continue;
+			//chPac[nRow][nCol] = true;
 			eat += (int) mon[nRow][nCol].size();
 			path[pathlen + 1] = { nRow, nCol };
 			movePac(nRow, nCol, pathlen + 1, eat);
 			eat -= (int) mon[nRow][nCol].size();
 			path[pathlen + 1] = { -1, -1 };
-			chPac[nRow][nCol] = false;
+			//chPac[nRow][nCol] = false;
 		}
 	}
 }
