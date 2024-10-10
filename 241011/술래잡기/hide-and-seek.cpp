@@ -72,7 +72,7 @@ void moveRunner()
 			int nRow = player.row + drow[player.type][player.dir];
 			int nCol = player.col + dcol[player.type][player.dir];
 			// 다음 칸이 보드 밖이면
-			if (nRow >= N || nRow < 0 || nCol >= N || nCol < 0)
+			if (nRow > N || nRow < 1 || nCol > N || nCol < 1)
 			{
 				// 방향을 바꾸고 이동 시도
 				player.dir = (player.dir == 0 ? 1 : 0);
@@ -103,15 +103,18 @@ void moveKiller()
 			killerDir = rotateKiller();
 			walked++;
 		}
-		else if (walked == N * N - 1)
+		else if (walked == N * N - 2)
 		{
+			int nRow = killer.first + dkrow[killerDir];
+			int nCol = killer.second + dkcol[killerDir];
+			killer = make_pair(nRow, nCol);
+			isVisit[nRow][nCol] = 1;
+
 			isBack = true;
 			killerDir = 0;
-			isVisit[killer.first][killer.second] = 0;
-			killer.first += dkrowBack[killerDir];
-			killer.second += dkcolBack[killerDir];
-			walked--;
+			walked++;
 		}
+
 		else
 		{
 			int nRow = killer.first + dkrow[killerDir];
@@ -177,7 +180,7 @@ void killRunner()
 	for (int i = 0; i < 3; i++)
 	{
 		pair<int, int> pos = targets[i];
-		if (isTree[pos.first][pos.second]) continue;
+		if (pos.first > N || pos.first < 1 || pos.second > N || pos.second < 1 || isTree[pos.first][pos.second]) continue;
 		int runnerCnt = runner.size();
 		for (int j = 0; j < runnerCnt; j++)
 		{
@@ -192,6 +195,7 @@ void killRunner()
 		}
 	}
 	score += turn * kill;
+	//cout << score << "\n";
 }
 int main()
 {
@@ -201,7 +205,6 @@ int main()
 		moveRunner();
 		moveKiller();
 		searchRunner();
-		killRunner();
 		//cout << "[[[[" << walked << "]]]]\n";
 		//for (int j = 1; j <= N; j++)
 		//{
@@ -214,6 +217,11 @@ int main()
 		//	}
 		//	cout << '\n';
 		//}
+		//cout << "검사 대상\n";
+		//for (int i = 0; i < 3; i++)
+		//	cout << targets[i].first << ' ' << targets[i].second << ' ';
+		//cout << "\n";
+		killRunner();
 	}
 	cout << score;
 }
