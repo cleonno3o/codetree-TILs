@@ -195,7 +195,6 @@ void killRunner()
 		}
 	}
 	score += turn * kill;
-	//cout << score << "\n";
 }
 int main()
 {
@@ -205,22 +204,6 @@ int main()
 		moveRunner();
 		moveKiller();
 		searchRunner();
-		//cout << "[[[[" << walked << "]]]]\n";
-		//for (int j = 1; j <= N; j++)
-		//{
-		//	for (int k = 1; k <= N; k++)
-		//	{
-		//		if (killer == make_pair(j, k))
-		//			cout << "K" << "\t";
-		//		else if (isVisit[j][k] == 1) cout << "1" << "\t";
-		//		else cout << "0" << "\t";
-		//	}
-		//	cout << '\n';
-		//}
-		//cout << "검사 대상\n";
-		//for (int i = 0; i < 3; i++)
-		//	cout << targets[i].first << ' ' << targets[i].second << ' ';
-		//cout << "\n";
 		killRunner();
 	}
 	cout << score;
