@@ -61,9 +61,6 @@ void rollMill()
 		startCol += cSize;
 		if (rSize == cSize) rSize++;
 		else if (rSize > cSize) cSize++;
-		// 회전 결과 출력테스트
-		//cout << "[[[" << turn << "]]\n";
-		//test_printMill();
 	}
 }
 void linearMill()
@@ -86,8 +83,6 @@ void linearMill()
 	}
 	for (int i = 0; i < N; i++)
 		mill[N - 1][i] = temp[i];
-	//cout << "펼치기\n";
-	//test_printMill();
 }
 void pressMill()
 {
@@ -122,8 +117,6 @@ void pressMill()
 		for (int j = 0; j < N; j++)
 			mill[i][j] += temp[i][j];
 	}
-	//cout << "press결과\n";
-	//test_printMill();
 	linearMill();
 }
 void foldTwice()
@@ -133,8 +126,6 @@ void foldTwice()
 		mill[N - 2][N - 1 - j] = mill[N - 1][j];
 		mill[N - 1][j] = 0;
 	}
-	//cout << "한법접기\n";
-	//test_printMill();
 	for (int i = 0; i < 2; i++)
 	{
 		for (int j = 0; j < N / 4; j++)
@@ -143,8 +134,6 @@ void foldTwice()
 			mill[N - 1 - i][N / 2 + j] = 0;
 		}
 	}
-	//cout << "두법접기\n";
-	//test_printMill();
 }
 int main()
 {
@@ -163,7 +152,6 @@ int main()
 		if (abs(maxVal - minVal) <= K) break;
 		else
 		{
-			//cout << minVal << " " << maxVal << "\n";
 			putMill();
 			rollMill();
 			pressMill();
